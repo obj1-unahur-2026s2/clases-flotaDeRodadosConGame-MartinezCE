@@ -21,12 +21,10 @@ class RenaultKwid {
 }
 
 class AutoEspecial {
-
   const property capacidad
   const property velocidadMaxima
   const property peso
   const property color
-  
 }
 
 object trafic {
@@ -40,74 +38,91 @@ object trafic {
   method peso() = (4000 + interior.peso()) + motor.peso()
   
   method color() = "blanco"
-}
+} // Interiores
 
-// Interiores
 object comodo {
   method capacidad() = 5
+  
   method peso() = 700
 }
 
 object popular {
   method capacidad() = 12
+  
   method peso() = 1000
-}
+} // Motores
 
-// Motores
 object pulenta {
   method peso() = 800
+  
   method velocidadMaxima() = 130
 }
 
 object bataton {
   method peso() = 500
+  
   method velocidadMaxima() = 80
 }
 
 class Dependencia {
   const flota = []
-  const empleados 
-
+  const empleados
+  
   method agregarAFlota(rodado) {
     // Agrega un rodado a la flota
     flota.add(rodado)
   }
+  
   method quitarDeFlota(rodado) {
     // Quita un rodado de la flota
     flota.remove(rodado)
   }
+  
   method pesoTotalFlota() {
     var total = 0
-    total = flota.sum({f=> f.peso()})
+    total = flota.sum({ f => f.peso() })
     return total
   }
-
-  method auxEstaBienEquipada() {
-    return flota.size() >= 3 and flota.all({ f => f.velocidadMaxima() >= 100 })
-  }
-
-  method estaBienEquipada() {
-    return self.auxEstaBienEquipada()
-    // Devuelve true si la flota tiene al menos un rodado de cada color
-  }
-  method capacidadTotalEnColor(color) {
-   return flota.sum({ f => if (f.color() == color) f.capacidad() else 0 })
-    // Devuelve la capacidad total de la flota en color
-  }
-  method colorDelRodadoMasRapido() {
-    return flota.max({ f => f.velocidadMaxima() }).color()
-    // Devuelve el color del rodado más rápido de la flota
-  }
-  method auxCapacidadTotal (){
-    return flota.sum({ f => f.capacidad() })
-  }
-  method capacidadFaltante() {
-    return empleados - self.auxCapacidadTotal()
-    // Devuelve la capacidad faltante para llegar a 100
-  }
-  method esGrande() {
-    return empleados >= 40 and flota.size() >= 5
-    // Devuelve true si la flota tiene más de 10 rodados
-  }
+  
+  method auxEstaBienEquipada() = (flota.size() >= 3) and flota.all(
+    { f => f.velocidadMaxima() >= 100 }
+  )
+  
+  method estaBienEquipada() = self.auxEstaBienEquipada()
+  
+  method capacidadTotalEnColor(color) = flota.sum(
+    { f => if (f.color() == color) f.capacidad() else 0 }
+  )
+  
+  method colorDelRodadoMasRapido() = flota.max(
+    { f => f.velocidadMaxima() }
+  ).color()
+  
+  method auxCapacidadTotal() = flota.sum({ f => f.capacidad() })
+  
+  method capacidadFaltante() = empleados - self.auxCapacidadTotal()
+  
+  method esGrande() = (empleados >= 40) and (flota.size() >= 5)
 }
 
+class Pedido {
+  const distancia
+  var tiempoMaximo
+  const cantidadDePasajeros
+  const coloresIncompatibles = #{}
+  
+  method velocidadRequerida() = distancia / tiempoMaximo
+  
+  method satisfacePedido(rodado) =
+    (rodado.velocidadMaxima() >= (self.velocidadRequerida() + 10)) and
+    (rodado.capacidad() >= cantidadDePasajeros) and
+    (not coloresIncompatibles.contains(rodado.color()))
+  
+  method acelerar() {
+    tiempoMaximo -= 1
+  }
+  
+  method relajar() {
+    tiempoMaximo += 1
+  }
+}
